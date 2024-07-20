@@ -1,0 +1,39 @@
+# scripts/market_analysis.py
+
+import requests
+import pandas as pd
+
+def fetch_market_data(api_url):
+    """
+    Fetch market data for blockchain assets from an API.
+    
+    :param api_url: Base URL of the blockchain API
+    :return: DataFrame with market data
+    """
+    response = requests.get(f'{api_url}/market')
+    response.raise_for_status()
+    data = response.json()
+    df = pd.DataFrame(data)
+    return df
+
+def analyze_market_data(df):
+    """
+    Analyze market data for blockchain assets.
+    
+    :param df: DataFrame with market data
+    :return: Analysis results as DataFrame
+    """
+    analysis = {
+        'total_market_cap': df['market_cap'].sum(),
+        'average_price': df['price'].mean(),
+        'top_assets': df.nlargest(5, 'market_cap')
+    }
+    analysis_df = pd.DataFrame([analysis])
+    return analysis_df
+
+# Example usage:
+# api_url = 'https://api.blockchain.example.com'
+# market_data_df = fetch_market_data(api_url)
+# print(market_data_df)
+# market_analysis_df = analyze_market_data(market_data_df)
+# print(market_analysis_df)
